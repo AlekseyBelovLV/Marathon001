@@ -10,9 +10,9 @@ public class Task3 {
     }
 }
 class Teacher {
-    String name;
-    String lesson;
-    Random rnd = new Random();// Вопрос, где в данном случае лучше создавать об. Random ?
+    private String name;
+    private String lesson;
+    private Random rnd = new Random();// Вопрос, где в данном случае лучше создавать об. Random ?
 
     Teacher(String name, String lesson) {
         this.name = name;
@@ -20,12 +20,14 @@ class Teacher {
     }
 
     public void evaluate(String nameStudent) {
-        int rating;
-        rating = rnd.nextInt(4) + 2;
+        String[] ratings = {"отлично", "хорошо", "удовлетворительно", "неудовлетварительно"};
+        String rating;
+        rating = ratings[rnd.nextInt(4)];
+
         System.out.println("Преподаватель " + name +
                 " оценил студента с именем " + nameStudent +
                 ", по предмету " + lesson +
-                " на " + rating + " бала.");
+                " на оценку " + rating + ".");
     }
 }
 
