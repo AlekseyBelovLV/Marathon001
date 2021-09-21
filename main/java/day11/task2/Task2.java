@@ -23,41 +23,20 @@ public class Task2 {
             war.physicalAttack(mag);
             System.out.println(mag);
         }
+        sham.healTeammate(mag);
+        sham.healTeammate(mag);
+        System.out.println(mag);
+
     }
 }
 
 abstract class Hero {
     private int health;
     private int physAtt;
-    private int magicAtt;
-    private int physDef;// %
-    private int magicDef;// %
-    private int healHimself;
-    private int healTeammate;
-
-    int getHealth() { return health; }
-    int getPhysAtt() { return physAtt; }
-    int getMagicAtt() { return magicAtt; }
-    int getPhysDef() { return physDef; }
-    int getMagicDef() { return magicDef; }
-    int getHealHimself() { return healHimself; }
-    int getHealTeammate() { return healTeammate; }
-
-    void setHealth(int health) { this.health = health; }
-}
-
-class Warrior extends Hero implements PhysAttack{
-    private int health;
-    private int physAtt;
     private int physDef;// %
     private int magicDef;// %
 
-    Warrior() {
-        this.health = 100;
-        this.physAtt = 30;
-        this.physDef = 80;
-        this.magicDef = 0;
-    }
+    Hero() { this.health = 100; }
 
     int getHealth() { return health; }
     int getPhysAtt() { return physAtt; }
@@ -65,148 +44,83 @@ class Warrior extends Hero implements PhysAttack{
     int getMagicDef() { return magicDef; }
 
     void setHealth(int health) { this.health = health; }
+    void setPhysAtt(int physAtt) { this.physAtt = physAtt; }
+    void setPhysDef(int physDef) { this.physDef = physDef; }
+    void setMagicDef(int magicDef) { this.magicDef = magicDef; }
 
     public void physicalAttack(Hero h) {
         if(h.getHealth() > 0) {
-            if(h.getPhysDef() > 0) {
-                double tempPhysDef = h.getPhysDef();
-                int damage = this.physAtt -(int)(tempPhysDef / 100 * this.physAtt);
-                if(h.getHealth() - damage <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - damage);
-                }
+            double tempPhysDef = h.getPhysDef();
+            int damage = this.getPhysAtt() -(int)(tempPhysDef / 100 * this.getPhysAtt());
+            if(h.getHealth() - damage <= 0) {
+                h.setHealth(0);
             } else {
-                if(h.getHealth() - this.physAtt <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - this.physAtt);
-                }
+                h.setHealth(h.getHealth() - damage);
             }
         } else {
-            System.out.println(h + " уже убит.");
+            System.out.println("Герой уже убит.");
         }
     }
+}
 
-    public String toString() { return "Warrior health: " + this.health; }
+class Warrior extends Hero implements PhysAttack{
+    Warrior() {
+        super.setPhysAtt(30);
+        super.setPhysDef(80);
+        super.setMagicDef(0);
+    }
 
+    public String toString() { return "Warrior health: " + super.getHealth(); }
 }
 
 class Paladin extends Hero implements PhysAttack, Healer {
-    private int health;
-    private int physAtt;
-    private int physDef;// %
-    private int magicDef;// %
     private int healHimself;
     private int healTeammate;
 
     Paladin() {
-        this.health = 100;
-        this.physAtt = 15;
-        this.physDef = 50;
-        this.magicDef = 20;
+        super.setPhysAtt(15);
+        super.setPhysDef(50);
+        super.setMagicDef(20);
         this.healHimself = 25;
         this.healTeammate = 10;
     }
 
-    int getHealth() { return health; }
-    int getPhysAtt() { return physAtt; }
-    int getPhysDef() { return physDef; }
-    int getMagicDef() { return magicDef; }
-    int getHealHimself() { return healHimself; }
-    int getHealTeammate() { return healTeammate; }
-
-    void setHealth(int health) { this.health = health; }
-
-    public void physicalAttack(Hero h) {
-        if(h.getHealth() > 0) {
-            if(h.getPhysDef() > 0) {
-                double tempPhysDef = h.getPhysDef();
-                int damage = this.physAtt -(int)(tempPhysDef / 100 * this.physAtt);
-                if(h.getHealth() - damage <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - damage);
-                }
+    public void healHimself() {
+        if(super.getHealth() > 0) {
+            if (super.getHealth() + this.healHimself <= 100) {
+                super.setHealth(super.getHealth() + this.healHimself);
             } else {
-                if(h.getHealth() - this.physAtt <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - this.physAtt);
-                }
+                this.setHealth(100);
             }
         } else {
-            System.out.println(h + " уже убит.");
-        }
-    }
-
-    public void healHimself() {
-        if (this.health + healHimself <= 100) {
-            this.health += this.healHimself;
-        } else if (this.health + healHimself > 100){
-            this.health = 100;
-        } else {
-            System.out.println("Поздно пить баржоми.");
+            System.out.println("Труп ни лечится.");
         }
     }
 
     public void healTeammate(Hero h) {
-        if (h.getHealth() + this.healTeammate <= 100) {
-            h.setHealth(h.getHealth() + this.healTeammate);
-        } else if (h.getHealth() + this.healTeammate > 100) {
-            h.setHealth(100);
+        if(h.getHealth() > 0) {
+            if (h.getHealth() + this.healTeammate <= 100) {
+                h.setHealth(h.getHealth() + this.healTeammate);
+            } else {
+                h.setHealth(100);
+            }
         } else {
-            System.out.println(h + " умер, его больше не выличить.");
+            System.out.println("Герой умер, его больше не выличить.");
         }
     }
 
-    public String toString() { return "Paladin health: " + this.health; }
+    public String toString() { return "Paladin health: " + this.getHealth(); } //?? Как правильно this или super ??
 
 }
 
 class Magician extends Hero implements PhysAttack, MagicAttack {
-    private int health;
-    private int physAtt;
     private int magicAtt;
-    private int physDef;// %
-    private int magicDef;// %
 
     Magician() {
-        this.health = 100;
-        this.physAtt = 5;
+        super.setPhysAtt(5);
+        super.setPhysDef(0);
+        super.setMagicDef(80);
         this.magicAtt = 20;
-        this.physDef = 0;
-        this.magicDef = 80;
-    }
-
-    int getHealth() { return health; }
-    int getPhysAtt() { return physAtt;}
-    int getMagicAtt() { return magicAtt; }
-    int getPhysDef() { return physDef; }
-    int getMagicDef() { return magicDef; }
-
-    void setHealth(int health) { this.health = health; }
-
-    public void physicalAttack(Hero h) {
-        if(h.getHealth() > 0) {
-            if(h.getPhysDef() > 0) {
-                double tempPhysDef = h.getPhysDef();
-                int damage = this.physAtt -(int)(tempPhysDef / 100 * this.physAtt);
-                if(h.getHealth() - damage <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - damage);
-                }
-            } else {
-                if(h.getHealth() - this.physAtt <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - this.physAtt);
-                }
-            }
-        } else {
-            System.out.println(h + " уже убит.");
-        }
     }
 
     public void magicalAttack(Hero h) {
@@ -231,59 +145,21 @@ class Magician extends Hero implements PhysAttack, MagicAttack {
         }
     }
 
-    public String toString() { return "Magician health: " + this.health; }
-
+    public String toString() { return "Magician health: " + super.getHealth(); }
 }
 
 class Shaman extends Hero implements PhysAttack, MagicAttack, Healer {
-    private int health;
-    private int physAtt;
     private int magicAtt;
-    private int physDef;// %
-    private int magicDef;// %
     private int healHimself;
     private int healTeammate;
 
     Shaman() {
-        this.health = 100;
-        this.physAtt = 10;
+        super.setPhysAtt(10);
+        super.setPhysDef(20);
+        super.setMagicDef(20);
         this.magicAtt = 15;
-        this.physDef = 20;
-        this.magicDef = 20;
         this.healHimself = 50;
         this.healTeammate = 30;
-    }
-
-    int getHealth() { return health; }
-    int getPhysAtt() { return physAtt; }
-    int getMagicAtt() { return magicAtt; }
-    int getPhysDef() { return physDef; }
-    int getMagicDef() { return magicDef; }
-    int getHealHimself() { return healHimself; }
-    int getHealTeammate() { return healTeammate; }
-
-    void setHealth(int health) { this.health = health; }
-
-    public void physicalAttack(Hero h) {
-        if(h.getHealth() > 0) {
-            if(h.getPhysDef() > 0) {
-                double tempPhysDef = h.getPhysDef();
-                int damage = this.physAtt -(int)(tempPhysDef / 100 * this.physAtt);
-                if(h.getHealth() - damage <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - damage);
-                }
-            } else {
-                if(h.getHealth() - this.physAtt <= 0) {
-                    h.setHealth(0);
-                } else {
-                    h.setHealth(h.getHealth() - this.physAtt);
-                }
-            }
-        } else {
-            System.out.println(h + " уже убит.");
-        }
     }
 
     public void magicalAttack(Hero h) {
@@ -309,27 +185,30 @@ class Shaman extends Hero implements PhysAttack, MagicAttack, Healer {
     }
 
     public void healHimself() {
-        if (this.health + healHimself <= 100) {
-            this.health += this.healHimself;
-        } else if (this.health + healHimself > 100){
-            this.health = 100;
+        if(super.getHealth() > 0) {
+            if (super.getHealth() + this.healHimself <= 100) {
+                super.setHealth(super.getHealth() + this.healHimself);
+            } else {
+                this.setHealth(100);
+            }
         } else {
-            System.out.println("Поздно пить баржоми.");
+            System.out.println("Труп ни лечится.");
         }
     }
 
     public void healTeammate(Hero h) {
-        if (h.getHealth() + this.healTeammate <= 100) {
-            h.setHealth(h.getHealth() + this.healTeammate);
-        } else if (h.getHealth() + this.healTeammate > 100) {
-            h.setHealth(100);
+        if(h.getHealth() > 0) {
+            if (h.getHealth() + this.healTeammate <= 100) {
+                h.setHealth(h.getHealth() + this.healTeammate);
+            } else {
+                h.setHealth(100);
+            }
         } else {
-            System.out.println(h + " умер, его больше не выличить.");
+            System.out.println("Герой умер, его больше не выличить.");
         }
     }
 
-    public String toString() { return "Shaman health: " + this.health; }
-
+    public String toString() { return "Shaman health: " + super.getHealth(); }
 }
 
 

@@ -16,22 +16,13 @@ public class Task1 {
         System.out.println(warehouse1);
         System.out.println(picker1);
         System.out.println(courier1);
-        businessProcess(picker1);
-        System.out.println(warehouse1);
-        System.out.println(picker1);
-        System.out.println(courier1);
-        picker1.bonus(); courier1.bonus();
 
         picker2.doWork();
         courier2.doWork();
+        System.out.println(warehouse2);
         System.out.println(picker2);
         System.out.println(courier2);
-        System.out.println(warehouse2);
-
         System.out.println(warehouse1);
-        System.out.println(picker1);
-        System.out.println(courier1);
-
     }
 
     static void businessProcess(Worker worker) {
@@ -54,73 +45,64 @@ class Warehouse {
 
 class Picker implements Worker {
     private int salary;
-    private int isPayed;
-    private final int pickedCap = 10000;
+    private int paidBonus;
+    private boolean isPayed;
     private final int BONUS = 70000;
-    Warehouse warehouse;
+    private Warehouse warehouse;
 
     Picker(Warehouse w) { this.warehouse = w; }
 
-    int getSalary() { return  salary; }
-    int getIsPayed() { return  isPayed; }
-    int getBONUS() { return BONUS; }
+    int getSalary() { return  salary; } // ?
+    boolean getIsPayed() { return isPayed; } // ?
 
     public void doWork() {
         this.salary += 80;
         warehouse.setCountPickedOrders( warehouse.getCountPickedOrders() + 1);
+        if(warehouse.getCountPickedOrders() % 10000 == 0) { this.isPayed = true; }
     }
 
     public void bonus() {
-        if(warehouse.getCountPickedOrders() >= this.pickedCap) {
-            if((warehouse.getCountPickedOrders() / this.pickedCap) > (this.isPayed / this.BONUS)) {
-                this.isPayed += this.BONUS;
-                System.out.println();
-            } else {
-                System.out.println("Сборщики за " + (warehouse.getCountPickedOrders() / this.pickedCap) + " норму бонус уже получили.");
-            }
+        if(this.isPayed) {
+            this.paidBonus += BONUS;
+            this.isPayed = false;
         } else {
-            System.out.println("Для сборщиков бонус пока не доступен");
+            System.out.println("Для сборщиков бонус пока не доступен.");
         }
     }
 
-    public String toString() { return "Зарплата сборщика: " + this.salary + " , бнус сборщик: " + this.isPayed;}
-
+    public String toString() { return "Зарплата сборщика: " + this.salary + " , бнус сборщик: " + this.paidBonus;}
 }
 
 class Courier implements Worker {
     private int salary;
-    private int isPayed;
-    private final int deliveredCap = 10000;
+    private int paidBonus;
+    private boolean isPayed;
     private final int BONUS = 50000;
-    Warehouse warehouse;
+    private Warehouse warehouse;
 
     Courier(Warehouse w) { this.warehouse = w; }
 
-    int getSalary() { return salary; }
-    int getIsPayed() { return isPayed; }
-    int getBONUS() {return BONUS; }
+    int getSalary() { return salary; } // ?
+    boolean getIsPayed() { return isPayed; } // ?
 
     public void doWork() {
         if(warehouse.getCountPickedOrders() > warehouse.getCountDeliveredOrders()) {
             salary += 100;
             warehouse.setCountDeliveredOrders(warehouse.getCountDeliveredOrders() + 1);
+            if(warehouse.getCountDeliveredOrders() % 10000 == 0) { this.isPayed = true; }
         } else {
             System.out.println("Посылки ещё не собрали.");
         }
     }
 
     public void bonus() {
-        if(warehouse.getCountDeliveredOrders() >= deliveredCap) {
-            if((warehouse.getCountDeliveredOrders() / deliveredCap) > (isPayed / BONUS)) {
-                isPayed += BONUS;
-            } else {
-                System.out.println("Курьеры за " + (warehouse.getCountDeliveredOrders() / deliveredCap) + " норму бонус уже получили.");
-            }
+        if(this.isPayed) {
+            this.paidBonus += this.BONUS;
+            this.isPayed = false;
         } else {
-            System.out.println("Для сборщиков бонус пока не доступен");
+            System.out.println("Для курьеров бонус пока не доступен.");
         }
     }
 
-    public String toString() { return "Зарплата курьера: " + salary + " , бнус курьера: " + isPayed;}
-
+    public String toString() { return "Зарплата курьера: " + salary + " , бнус курьера: " + paidBonus;}
 }
