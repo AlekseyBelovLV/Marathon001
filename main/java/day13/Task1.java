@@ -1,8 +1,7 @@
 package day13;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class Task1 {
@@ -11,10 +10,12 @@ public class Task1 {
         User user2 = new User("Alex");
         User user3 = new User("Oleg");
 
-        System.out.println(user2);
         user2.subscribe(user1);
         user2.subscribe(user3);
-        System.out.println(user2);
+        user3.subscribe(user2);
+        System.out.println(user1.getSubscriptions());
+        System.out.println(user2.getSubscriptions());
+        System.out.println(user3.getSubscriptions());
 
         user1.sendMessage(user2, "Привет.");
         user1.sendMessage(user2, "Что делаешь?");
@@ -29,71 +30,84 @@ public class Task1 {
         user1.sendMessage(user3, "Хорошо, давайте завтра.");
         user3.sendMessage(user1, "Договорились. До встречи.");
 
-        System.out.println(MessageDatabase.getMessages());
         MessageDatabase.showDialog(user1, user2);
         MessageDatabase.showDialog(user3, user1);
     }
 }
 
+
 class User {
     private String userName;
     private List<User> subscriptions;
-    private List<String> friends;
+    private List<User> friends;
 
     public User(String userName) {
         this.userName= userName;
         this.subscriptions = new ArrayList<>();
+        this.friends = new ArrayList<>();
     }
 
     public String getUserName() { return userName; }
     public List<User> getSubscriptions() { return subscriptions; }
+    public List<User> getFriends() { return friends; }
 
-    public void subscribe(User user) { if(isSubscribed(user)) { this.subscriptions.add(user); } }
+    public void subscribe(User user) {
+        if(!isSubscribed(user)) {
+            this.subscriptions.add(user);
+        } else {
+            System.out.println("Пользаватель " + this.userName + " уже подписана на пользавателя " + user.getUserName());
 
-    public boolean isSubscribed(User user) {
-        for(User i: subscriptions) {
-            if(user.equals(i)) {
-                System.out.println("Пользаватель " + this.userName + " уже подписана на пользавателя " + user.getUserName());
-                return false;
-            }
         }
-        return true;
+        if(!isFriend(user) && isSubscribed(user) && user.isSubscribed(this)) { this.friends.add(user); }
     }
 
-    public boolean isFriend(User user) {
-        return true;//Этот метод реализуется и список инициализируется точно также как и метод isSubscribed.
-        // Наличие или отсутствие таковой включает(или выключает) фильтры на доступ к информации пользователя.
+    private boolean isSubscribed(User user) {
+        for(User i: subscriptions) {
+            if(user.equals(i)) { return true; }
+        }
+        return false;
     }
 
-    public void sendMessage(User user, String text) {
-        MessageDatabase.addNewMessages( this , user, text);
+    public void makeFriend(User user) {
+        if(!isFriend(user)) {
+            if(user.isSubscribed(this) && isSubscribed(user)) { this.friends.add(user); }
+        }
     }
 
-    public String toString() { return userName + subscriptions; }
+    private boolean isFriend(User user) {
+        for(User i: friends) {
+            if(user.equals(i)) { return true; }
+        }
+        return false;
+    }
+
+    public void sendMessage(User user, String text) { MessageDatabase.addNewMessages( this , user, text); }
+
+    public String toString() { return userName; }
 }
 
 class Message {
     private User sender;
     private User receiver;
     private String text;
-    private Calendar calendar;
+    private LocalDateTime date;
 
     public Message(User sender, User receiver, String text) {
         this.text = text;
         this.sender = sender;
         this.receiver = receiver;
-        this.calendar = new GregorianCalendar();
+        this.date = LocalDateTime.now();
     }
 
     public User getSender() { return sender; }
     public User getReceiver() { return receiver; }
     public String getText() { return text; }
-    public Calendar getCalendar() { return calendar; }
+    public LocalDateTime getDate() { return date; }
 
     public String toString() {
         return "\n FROM: " + this.sender +
                 "\n   TO: " + this.receiver +
-                "\n   ON: " + calendar.getTime() +
+                "\n   ON: " + date.toString() +
                 "\n" + this.text;
     }
 
@@ -108,8 +122,9 @@ class MessageDatabase {
 
     public static void showDialog(User u1, User u2) {
         for(Message i: messages) {
-            if(i.getSender().equals(u1) && i.getReceiver().equals(u2)) { System.out.println(u1.getUserName() + ": " + i.getText()); }
-            if(i.getSender().equals(u2) && i.getReceiver().equals(u1)) { System.out.println(u2.getUserName() + ": " + i.getText()); }
+            if(i.getSender().equals(u1) && i.getReceiver().equals(u2) || i.getSender().equals(u2) && i.getReceiver().equals(u1)) {
+                System.out.println(i.getSender().getUserName() + ": " + i.getText());
+            }
         }
     }
 
