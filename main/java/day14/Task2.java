@@ -8,43 +8,35 @@ import java.util.Scanner;
 
 public class Task2 {
     private static Scanner scn;
-
     public static void main(String[] args) {
-        File file = new File("people");
-        try{
-//            scn = new Scanner(file);
-            System.out.println(parseFileToStringList(file));
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден.");
-        }
+        File file = new File("people.txt");
+
+        System.out.println(parseFileToStringList(file));
     }
 
-    public static List<String> parseFileToStringList(File file) throws FileNotFoundException {
-        List<String> names = new ArrayList();
-        if(fileIsCorrect(file)) {
-            scn = new Scanner(file);
-            while (scn.hasNextLine()) {
-                names.add(scn.nextLine());
+    public static List<String> parseFileToStringList(File file) {
+        List<String> nameAndAge = new ArrayList<>();
+        try {
+            if(fileIsCorrect(file)) {
+                scn = new Scanner(file);
+                while (scn.hasNextLine()) {
+                    nameAndAge.add(scn.nextLine());
+                }
             }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ScannerException e) {
+            System.out.println("Некорректный входной файл.");
         }
         scn.close();
-        return names;
+        return nameAndAge;
     }
 
-    private static boolean fileIsCorrect(File file) throws FileNotFoundException {
+    private static boolean fileIsCorrect(File file) throws FileNotFoundException, ScannerException{
         scn = new Scanner(file);
         while(scn.hasNextLine()) {
-            String line = scn.nextLine();
-            String[] tempWords = line.split(" ");
-            int tempNum = Integer.parseInt(tempWords[1]);
-            if(tempNum < 0) {
-                try {
-                    throw new ScannerException();
-                } catch (ScannerException e) {
-                    System.out.println("Некорректный входной файл");
-                }
-                return false;
-            }
+            String[] str = scn.nextLine().split(" ");
+            if (Integer.parseInt(str[1]) < 0) { throw new ScannerException(); }
         }
         return true;
     }

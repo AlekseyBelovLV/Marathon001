@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Task1 {
     public static void main(String[] args) {
-        File file = new File("Day14Task1");
+        File file = new File("Day14Task1.txt");
         try {
             printSumDigits(file);
         } catch (FileNotFoundException e) {
