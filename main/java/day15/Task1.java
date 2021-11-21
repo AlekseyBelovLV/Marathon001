@@ -21,17 +21,22 @@ public class Task1 {
             System.out.println("Неправельный формат файла.");
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ScannerException e) {
+            System.out.println(e.getMessage());
         }
 
     }
 
-    public static void missingShoes(File file) throws IOException {
+    public static void missingShoes(File file) throws IOException, ScannerException {
         if(fileIsCorrect(file)) {
+            File file2 = new File("main/resources/missing_shoes.txt");
+            if(!file2.isFile()) { file2.createNewFile(); }
+
             scn = new Scanner(file);
             FileWriter fw = new FileWriter("main/resources/missing_shoes.txt", false);
+
             while (scn.hasNextLine()) {
-                String line = scn.nextLine();
-                String[] strArr = line.split(";");
+                String[] strArr = scn.nextLine().split(";");
                 if (Integer.parseInt(strArr[2]) == 0) {
                     for (int i = 0; i < strArr.length; i++) {
                         fw.write(strArr[i] + ", ");
@@ -44,30 +49,18 @@ public class Task1 {
         }
     }
 
-    private static boolean fileIsCorrect(File file) throws FileNotFoundException {
+    private static boolean fileIsCorrect(File file) throws FileNotFoundException, ScannerException {
         scn = new Scanner(file);
         if(!scn.hasNextLine()) {
-            try {
-                throw new ScannerException();
-            } catch (ScannerException e) {
-                System.out.println("Файл пустой.");
-                return false;
-            }
+            throw new ScannerException("Файл пустой.");
         }
 
         while(scn.hasNextLine()) {
-            String line = scn.nextLine();
-            String[] strArr2 = line.split(";");
+            String[] strArr2 = scn.nextLine().split(";");
             if(strArr2.length != 3) {
-                try {
-                    throw new ScannerException();
-                } catch (ScannerException e) {
-                    System.out.print("Не корректное отображение информации.");
-                    return false;
-                }
+                throw new ScannerException("Не корректное отображение информации.");
             }
         }
         return true;
     }
-
 }

@@ -9,43 +9,36 @@ import java.util.Scanner;
 public class Task3 {
     private static Scanner scn;
     public static void main(String[] args) {
-        File file = new File("people");
+        File file = new File("people.txt");
         try {
             System.out.println(parseToObjList(file));
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден.");
+        } catch (ScannerException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    public static List<Person> parseToObjList(File file) throws FileNotFoundException {
+    public static List<Person> parseToObjList(File file) throws FileNotFoundException, ScannerException {
         List<Person> nameList = new ArrayList<>();
         if(fileIsCorrect(file)) {
             scn = new Scanner(file);
             while(scn.hasNextLine()){
-                String line = scn.nextLine();
-                String[] nameAndAge = line.split(" ");
-                String s = nameAndAge[0];
-                int i = Integer.parseInt(nameAndAge[1]);
-                nameList.add(new Person(s, i));
+                String[] nameAndAge = scn.nextLine().split(" ");
+                nameList.add(new Person(nameAndAge[0], Integer.parseInt(nameAndAge[1])));
             }
         }
         scn.close();
         return nameList;
     }
 
-    private static boolean fileIsCorrect(File file) throws FileNotFoundException {
+    private static boolean fileIsCorrect(File file) throws FileNotFoundException, ScannerException {
         scn = new Scanner(file);
         while(scn.hasNextLine()) {
-            String line = scn.nextLine();
-            String[] tempStrings = line.split(" ");
+            String[] tempStrings = scn.nextLine().split(" ");
             if(Integer.parseInt(tempStrings[1]) < 0) {
-                try{
-                    throw new ScannerException();
-                } catch (ScannerException e) {
-                    System.out.println("Некорректный входной файл.");
-                }
-                return false;
-            }
+                scn.close();
+                throw new ScannerException("Некорректный входной файл."); }
         }
         return true;
     }

@@ -36,7 +36,7 @@ public class Task2 {
         scn = new Scanner(file);
         while(scn.hasNextLine()) {
             String[] str = scn.nextLine().split(" ");
-            if (Integer.parseInt(str[1]) < 0) { throw new ScannerException(); }
+            if (Integer.parseInt(str[1]) < 0) { throw new ScannerException(""); }
         }
         return true;
     }

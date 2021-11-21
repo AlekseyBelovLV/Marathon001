@@ -14,7 +14,7 @@ public class Task1 {
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден.");
         } catch (ScannerException e) {
-            System.out.println("Некорректный входной файл");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -25,7 +25,7 @@ public class Task1 {
         List<Integer> numbers = new ArrayList<>();
         for (String word : words) { numbers.add(Integer.parseInt(word)); }
 
-        if(numbers.size() != 10) { throw new ScannerException();}
+        if(numbers.size() != 10) { throw new ScannerException("Некорректный входной файл");}
 
         int sum = 0;
         for(Integer i:numbers) { sum += i; }
