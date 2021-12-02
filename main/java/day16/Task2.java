@@ -8,8 +8,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Task2 {
-    public static FileWriter fw;
-    public static Scanner scn;
+    private static FileWriter fw;
+    private static Scanner scn;
+    private static Random rnd;
     public static void main(String[] args) {
         File file1 = new File("file1.txt");
         File file2 = new File("file2.txt");
@@ -25,7 +26,7 @@ public class Task2 {
     }
 
     public static void fillFile(File file) throws IOException {
-        Random rnd = new Random();
+        rnd = new Random();
         fw = new FileWriter(file, false);
         for(int i = 0; i < 1000; i++) {
             fw.write((rnd.nextInt(100) +1) +";");
